@@ -58,13 +58,6 @@ class SocialGraph:
             for _ in range(randint(avg_friendships - 1, avg_friendships + 1)):
                 self.add_friendship(i + 1, randint(1, len(self.users.items())))
 
-    def dfs(graph, visited, node):
-        if node not in visited:
-            print(node)
-            visited.add(node)
-            for neighbor in graph[node]:
-                dfs(visited, graph, neighbor)
-
     def get_all_social_paths(self, user_id):
         """
         Takes a user's user_id as an argument
@@ -75,20 +68,28 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
 
-        def dfs(graph, visited, node):
-            if node not in visited:
-                print(node)
-                visited.add(node)
-                for neighbor in graph[node]:
-                    dfs(visited, graph, neighbor)
-
-        visited = set()  # Note that this is a dictionary, not a set
-        queue = deque()
+        visited = [False] * len(self.friendships[user_id])  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
-        dfs(self.friendships, visited, self.friendships[user_id])
-
+        path = []
         return visited
 
+    def get_all_social_paths_util(self, curr, end, visited, path):
+        # set current node to visited and add to path
+        visited[curr] = True
+        path.append(curr)
+
+        # if current node at end, then add the path to all paths
+        if curr == end:
+            print(path)
+        else:
+            # if current node not at end, recursively find all neighbors
+            for node in self.friendships[curr]:
+                if not visited[node]:
+                    self.get_all_social_paths_util(node, end, visited, path)
+
+        #Remove current node from path list and set as not visited
+        path.pop()
+        visited[curr] = False
 
 if __name__ == '__main__':
     sg = SocialGraph()
