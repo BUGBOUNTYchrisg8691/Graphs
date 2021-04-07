@@ -1,3 +1,6 @@
+from random import randint
+from collections import deque
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -43,10 +46,24 @@ class SocialGraph:
         self.users = {}
         self.friendships = {}
         # !!!! IMPLEMENT ME
+        if num_users < avg_friendships:
+            raise ValueError("Invalid arguments! Number of Users must be greater than Avg number of friendships.")
 
         # Add users
+        for i in range(num_users):
+            self.add_user(f"Test User {i+1}")
 
         # Create friendships
+        for i in range(len(self.users.items())):
+            for _ in range(randint(avg_friendships - 1, avg_friendships + 1)):
+                self.add_friendship(i + 1, randint(1, len(self.users.items())))
+
+    def dfs(graph, visited, node):
+        if node not in visited:
+            print(node)
+            visited.add(node)
+            for neighbor in graph[node]:
+                dfs(visited, graph, neighbor)
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,8 +74,19 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
+
+        def dfs(graph, visited, node):
+            if node not in visited:
+                print(node)
+                visited.add(node)
+                for neighbor in graph[node]:
+                    dfs(visited, graph, neighbor)
+
+        visited = set()  # Note that this is a dictionary, not a set
+        queue = deque()
         # !!!! IMPLEMENT ME
+        dfs(self.friendships, visited, self.friendships[user_id])
+
         return visited
 
 
