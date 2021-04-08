@@ -73,10 +73,16 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
         for node in self.friendships.keys():
             if node != user_id:
-                visited.append(self.get_all_social_paths_util(user_id, node))
-        return visited
+                visited.append(self.get_all_social_paths_util_bfs(user_id, node))
+                
+        out = []
+        for paths in visited:
+            if len(paths) != 0:
+                out.append(min(paths, key=len))
 
-    def get_all_social_paths_util(self, start, end, path = []):
+        return out
+
+    def get_all_social_paths_util_dfs(self, start, end, path = []):
         path = path + [start]
         if start == end:
             return [path]
@@ -87,29 +93,28 @@ class SocialGraph:
         paths = []
         for node in self.friendships[start]:
             if node not in path:
-                new_paths = self.get_all_social_paths_util(node, end, path)
+                new_paths = self.get_all_social_paths_util_dfs(node, end, path)
                 for new_path in new_paths:
                     paths.append(new_path)
 
         return paths
 
-    # def get_all_social_paths_util(self, curr, end, visited, path):
-    #     # set current node to visited and add to path
-    #     visited[curr] = True
-    #     path.append(curr)
-    #
-    #     # if current node at end, then add the path to all paths
-    #     if curr == end:
-    #         print(path)
-    #     else:
-    #         # if current node not at end, recursively find all neighbors
-    #         for node in self.friendships[curr]:
-    #             if not visited[node]:
-    #                 self.get_all_social_paths_util(node, end, visited, path)
-    #
-    #     #Remove current node from path list and set as not visited
-    #     path.pop()
-    #     visited[curr] = False
+    def get_all_social_paths_util_bfs(self, start, end):
+        nodes = deque()
+        nodes.append([start])
+        all_possible_paths = []
+        while nodes:
+            prev = nodes.popleft()
+            last = prev[-1]
+            if last == end:
+                all_possible_paths.append(prev)
+
+            for node in self.friendships[last]:
+                if node not in prev:
+                    new_path = prev + [node]
+                    nodes.append(new_path)
+
+        return all_possible_paths
 
 if __name__ == '__main__':
     sg = SocialGraph()
