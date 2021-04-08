@@ -1,5 +1,6 @@
 from random import randint
 from collections import deque
+import timeit
 
 class User:
     def __init__(self, name):
@@ -56,7 +57,7 @@ class SocialGraph:
         # Create friendships
         for i in range(len(self.users.items())):
             # for _ in range(randint(avg_friendships - 1, avg_friendships + 1)):
-            for _ in range(1):
+            for _ in range(avg_friendships):
                 self.add_friendship(i + 1, randint(1, len(self.users.items())))
 
     def get_all_social_paths(self, user_id):
@@ -68,18 +69,19 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-
+        beg = timeit.default_timer()
         visited = []  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
         for node in self.friendships.keys():
             if node != user_id:
-                visited.append(self.get_all_social_paths_util_bfs(user_id, node))
+                visited.append(self.get_all_social_paths_util_dfs(user_id, node))
                 
         out = []
         for paths in visited:
             if len(paths) != 0:
                 out.append(min(paths, key=len))
-
+        end = timeit.default_timer()
+        print(f"timeit = {end - beg}")
         return out
 
     def get_all_social_paths_util_dfs(self, start, end, path = []):
@@ -118,7 +120,7 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
+    sg.populate_graph(20, 2)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
