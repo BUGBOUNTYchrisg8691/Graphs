@@ -71,22 +71,25 @@ class SocialGraph:
         """
         beg = timeit.default_timer()
 
-        # visited = []  # Note that this is a dictionary, not a set
-        out = []
+        out = []  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
         for node in self.friendships.keys():
             if node != user_id:
                 # needed for first pass solutions
-                # visited.append(self.get_all_social_paths_util_dfs(user_id, node))
-                out.append(self.get_paths_util_bfs(user_id, node))
+                # out.append(self.get_all_social_paths_util_dfs(user_id, node))
+                shortest_path = self.get_paths_util_bfs(user_id, node)
+                if shortest_path is not None:
+                    out.append(shortest_path)
 
         # needed for first pass solutions
-        # out = []
+        # filtered_out = []
         # for paths in visited:
         #     if len(paths) != 0:
-        #         out.append(min(paths, key=len))
+        #         filtered_out.append(min(paths, key=len))
         end = timeit.default_timer()
         print(f"timeit = {end - beg}")
+        # needed for first pass solutions
+        # return filtered_out
         return out
 
     # Best version so far
@@ -154,7 +157,9 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(100, 5)
+    sg.populate_graph(10, 2)
+    # for testing scalability (hangs at 10,000) I might do a 3rd pass but this seems efficient enough to turn in
+    # sg.populate_graph(4000, 100)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
