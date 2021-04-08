@@ -5,6 +5,9 @@ from world import World
 import random
 from ast import literal_eval
 
+# my imports
+import collections
+
 # Load world
 world = World()
 
@@ -13,8 +16,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+map_file = "maps/test_loop_fork.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -29,7 +32,36 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+# bfs from yesterday, add weighted edges? fucking dijkstra
+# though, I probably cannot edit the graph itself
+# possibly A* and a heuristic like distance from an exit, I do have the coords,
+# though they do not tell you where the exit is up front
+# fuck me
+# def path_traversal(graph, start, end):
+#     visited = []
+#     queue = collections.deque([[start]])
 
+    # if start == end:
+    #     return
+
+    # while queue:
+    #     path = queue.popleft()
+    #     node = path[-1]
+
+        # if node not in visited:
+        #     neighbors = graph[node]
+
+            # for neighbor in neighbors:
+            #     new_path = list(path)
+            #     new_path.append(neighbor)
+            #     queue.append(new_path)
+
+                # if neighbor == end:
+                #     return new_path
+
+            # visited.append(node)
+
+    # return
 
 # TRAVERSAL TEST
 visited_rooms = set()
@@ -51,12 +83,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
