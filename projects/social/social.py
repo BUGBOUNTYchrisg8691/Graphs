@@ -70,13 +70,17 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         beg = timeit.default_timer()
-        out = []  # Note that this is a dictionary, not a set
+
+        # visited = []  # Note that this is a dictionary, not a set
+        out = []
         # !!!! IMPLEMENT ME
         for node in self.friendships.keys():
             if node != user_id:
+                # needed for first pass solutions
                 # visited.append(self.get_all_social_paths_util_dfs(user_id, node))
                 out.append(self.get_paths_util_bfs(user_id, node))
 
+        # needed for first pass solutions
         # out = []
         # for paths in visited:
         #     if len(paths) != 0:
@@ -84,40 +88,6 @@ class SocialGraph:
         end = timeit.default_timer()
         print(f"timeit = {end - beg}")
         return out
-
-    def get_all_social_paths_util_dfs(self, start, end, path = []):
-        path = path + [start]
-        if start == end:
-            return [path]
-
-        if not self.friendships[start]:
-            return []
-
-        paths = []
-        for node in self.friendships[start]:
-            if node not in path:
-                new_paths = self.get_all_social_paths_util_dfs(node, end, path)
-                for new_path in new_paths:
-                    paths.append(new_path)
-
-        return paths
-
-    def get_all_social_paths_util_bfs(self, start, end):
-        nodes = deque()
-        nodes.append([start])
-        all_possible_paths = []
-        while nodes:
-            prev = nodes.popleft()
-            last = prev[-1]
-            if last == end:
-                all_possible_paths.append(prev)
-
-            for node in self.friendships[last]:
-                if node not in prev:
-                    new_path = prev + [node]
-                    nodes.append(new_path)
-
-        return all_possible_paths
 
     # Best version so far
     def get_paths_util_bfs(self, start, end):
@@ -146,9 +116,45 @@ class SocialGraph:
 
         return
 
+    # first pass solution
+    def get_all_social_paths_util_dfs(self, start, end, path = []):
+        path = path + [start]
+        if start == end:
+            return [path]
+
+        if not self.friendships[start]:
+            return []
+
+        paths = []
+        for node in self.friendships[start]:
+            if node not in path:
+                new_paths = self.get_all_social_paths_util_dfs(node, end, path)
+                for new_path in new_paths:
+                    paths.append(new_path)
+
+        return paths
+
+    # first pass solution
+    def get_all_social_paths_util_bfs(self, start, end):
+        nodes = deque()
+        nodes.append([start])
+        all_possible_paths = []
+        while nodes:
+            prev = nodes.popleft()
+            last = prev[-1]
+            if last == end:
+                all_possible_paths.append(prev)
+
+            for node in self.friendships[last]:
+                if node not in prev:
+                    new_path = prev + [node]
+                    nodes.append(new_path)
+
+        return all_possible_paths
+
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(20, 2)
+    sg.populate_graph(100, 5)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
