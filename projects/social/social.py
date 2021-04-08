@@ -70,16 +70,17 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         beg = timeit.default_timer()
-        visited = []  # Note that this is a dictionary, not a set
+        out = []  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
         for node in self.friendships.keys():
             if node != user_id:
-                visited.append(self.get_all_social_paths_util_dfs(user_id, node))
-                
-        out = []
-        for paths in visited:
-            if len(paths) != 0:
-                out.append(min(paths, key=len))
+                # visited.append(self.get_all_social_paths_util_dfs(user_id, node))
+                out.append(self.get_paths_util_bfs(user_id, node))
+
+        # out = []
+        # for paths in visited:
+        #     if len(paths) != 0:
+        #         out.append(min(paths, key=len))
         end = timeit.default_timer()
         print(f"timeit = {end - beg}")
         return out
@@ -117,6 +118,33 @@ class SocialGraph:
                     nodes.append(new_path)
 
         return all_possible_paths
+
+    # Best version so far
+    def get_paths_util_bfs(self, start, end):
+        visited = []
+        queue = deque([[start]])
+
+        if start == end:
+            return
+
+        while queue:
+            path = queue.popleft()
+            node = path[-1]
+
+            if node not in visited:
+                neighbors = self.friendships[node]
+
+                for neighbor in neighbors:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    queue.append(new_path)
+
+                    if neighbor == end:
+                        return new_path
+
+                visited.append(node)
+
+        return
 
 if __name__ == '__main__':
     sg = SocialGraph()
