@@ -4,6 +4,7 @@ from world import World
 
 import random
 from ast import literal_eval
+import collections
 
 # Load world
 world = World()
@@ -27,23 +28,20 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+traversal_path = []
 
 # Solution
-traversal_path = []
 traversal_graph = {}
 
 class Queue():
     def __init__(self):
-        self.queue = []
+        self.queue = collections.deque()
 
     def enqueue(self, value):
         self.queue.append(value)
 
     def dequeue(self):
-        if self.size() > 0:
-            return self.queue.pop(0)
-        else:
-            return
+        return self.queue.popleft()
 
     def size(self):
         return len(self.queue)
@@ -143,39 +141,10 @@ def find_nearest_empty_path(current):
 
     return
 
-# bfs from yesterday, add weighted edges? fucking dijkstra
-# though, I probably cannot edit the graph itself
-# possibly A* and a heuristic like distance from an exit, I do have the coords,
-# though they do not tell you where the exit is up front
-# fuck me
-# def path_traversal(graph, start, end):
-#     visited = []
-#     queue = collections.deque([[start]])
-
-    # if start == end:
-    #     return
-
-    # while queue:
-    #     path = queue.popleft()
-    #     node = path[-1]
-
-        # if node not in visited:
-        #     neighbors = graph[node]
-
-            # for neighbor in neighbors:
-            #     new_path = list(path)
-            #     new_path.append(neighbor)
-            #     queue.append(new_path)
-
-                # if neighbor == end:
-                #     return new_path
-
-            # visited.append(node)
-
-    # return
+# run solution
+path_traverser()
 
 # TRAVERSAL TEST
-path_traverser()
 visited_rooms = set()
 player.current_room = world.starting_room
 visited_rooms.add(player.current_room)
