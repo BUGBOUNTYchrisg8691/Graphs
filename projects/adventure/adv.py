@@ -4,6 +4,7 @@ from world import World
 
 import random
 from ast import literal_eval
+import collections
 
 # Load world
 world = World()
@@ -29,7 +30,119 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+# Solution
+traversal_graph = {}
 
+class Queue():
+    def __init__(self):
+        self.queue = collections.deque()
+
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def dequeue(self):
+        return self.queue.popleft()
+
+    def size(self):
+        return len(self.queue)
+
+def path_traverser():
+    global traversal_path
+
+    while True:
+        next_move = try_neighbors()
+
+        while next_move:
+            traversal_path.append(next_move)
+            next_move = try_neighbors()
+
+        nearest_empty_path = find_nearest_empty_path(player.current_room)
+
+        if nearest_empty_path is None:
+            break
+
+        traversal_path += nearest_empty_path
+
+        for direction in nearest_empty_path:
+            player.travel(direction)
+
+
+def try_neighbors():
+    global traversal_graph
+    directions = {"n", "s", "e", "w"}
+    next_direction = None
+
+    for direction in directions:
+        traversal_graph.setdefault(player.current_room.id, {'n': '?', 's': '?', 'e': '?', 'w': '?'})
+        if traversal_graph[player.current_room.id][direction] is not "?":
+            continue
+
+        last_room = player.current_room
+        player.travel(direction)
+
+        if update_rooms(direction, last_room, player.current_room):
+            next_direction = direction
+            player.travel(get_opposite_direction(direction))
+
+    if next_direction:
+        player.travel(next_direction)
+
+    return next_direction
+
+
+def update_rooms(direction, last_room, current_room):
+    global traversal_graph
+
+    if last_room is current_room:
+        traversal_graph[current_room.id][direction] = None
+        return False
+
+    else:
+        traversal_graph.setdefault(current_room.id, {'n': '?', 's': '?', 'e': '?', 'w': '?'})
+        traversal_graph[last_room.id][direction] = current_room.id
+        traversal_graph[current_room.id][get_opposite_direction(direction)] = last_room.id
+        return True
+
+
+def get_opposite_direction(direction):
+    if direction is "s":
+        return "n"
+    elif direction is "n":
+        return "s"
+    elif direction is "e":
+        return "w"
+    elif direction is "w":
+        return "e"
+    else:
+        return
+
+
+def find_nearest_empty_path(current):
+    global traversal_graph
+    queue = Queue()
+    queue.enqueue(current.id)
+    visited = {}
+
+    while queue.size() > 0:
+        room = queue.dequeue()
+        visited.setdefault(room, [])
+
+        for (key, value) in traversal_graph[room].items():
+            if value is None:
+                continue
+
+            if value is '?':
+                return visited[room]
+            else:
+                if value not in visited:
+                    visited.setdefault(value, visited[room].copy())
+                    visited[value].append(key)
+                    queue.enqueue(value)
+
+    return
+
+# run solution
+path_traverser()
 
 # TRAVERSAL TEST
 visited_rooms = set()
@@ -51,12 +164,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
